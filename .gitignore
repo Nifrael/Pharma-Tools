@@ -1,0 +1,14 @@
+# --- Node / Astro ---
+node_modules/
+dist/
+.env
+.astro/
+
+# --- Python ---
+__pycache__/
+venv/
+.venv/
+*.pyc
+*.db
+
+Thumbs.db
