@@ -1,5 +1,6 @@
 ---
 import "@styles/main.scss";
+import Navbar from "@components/global/Navbar.astro";
 import { ClientRouter } from "astro:transitions";
 ---
 
@@ -16,9 +17,8 @@ import { ClientRouter } from "astro:transitions";
   </head>
   <body>
     <main>
+      <Navbar />
       <slot />
     </main>
-
-
   </body>
 </html>
