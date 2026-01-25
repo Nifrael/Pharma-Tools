@@ -4,10 +4,21 @@ from backend.services.search_service import SearchEngine
 from backend.core.models import Drug
 import os
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(
     title="SafePills API",
     description="API pour l'analyse des interactions médicamenteuses",
     version="0.1.0"
+)
+
+# Configuration CORS pour permettre au Frontend (port 4321) de parler au Backend (port 8000)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # En développement, on peut être permissif
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Initialisation du moteur de recherche

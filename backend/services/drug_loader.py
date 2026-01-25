@@ -4,7 +4,7 @@ from backend.core.models import Drug, Substance
 
 # Notre liste de test (MVP)
 TARGET_DRUGS = [
-    "DOLIPRANE", "ADVIL", "KARDEGIC", "PREVISCAN", "XARELTO",
+    "DOLIPRANE", "CODOLIPRANE", "ADVIL", "KARDEGIC", "PREVISCAN", "XARELTO",
     "TAHOR", "CLAMOXYL", "AUGMENTIN", "SPASFON", "VENTOLINE",
     "LASILIX", "INEXIUM", "PLAVIX", "LEVOTHYROX", "MILLEPERTUIS"
 ]
@@ -45,43 +45,63 @@ def _load_all_substances(file_path: str) -> Dict[str, List[Substance]]:
             
     return substances_by_cis
 
+def _simplify_name(full_name: str) -> str:
+    """
+    Simplifie le nom en utilisant notre liste de marques cibles.
+    Ex: 'DOLIPRANELIQUIZ' -> 'DOLIPRANE'
+    """
+    # On trie par longueur décroissante pour matcher 'CODOLIPRANE' avant 'DOLIPRANE'
+    sorted_targets = sorted(TARGET_DRUGS, key=len, reverse=True)
+    
+    full_name_upper = full_name.upper()
+    for target in sorted_targets:
+        if target in full_name_upper:
+            return target
+            
+    # Si rien n'est trouvé, on garde le premier mot par défaut
+    import re
+    match = re.search(r'[^a-zA-ZÀ-ÿ]', full_name)
+    if match:
+        return full_name[:match.start()].strip().upper()
+    return full_name.upper().strip()
+
 def load_drugs(data_dir: str) -> List[Drug]:
     """
-    Fonction principale qui charge les médicaments filtrés et leurs substances.
+    Charge les médicaments en les regroupant par marque pour éviter les doublons.
     """
     cis_path = os.path.join(data_dir, "CIS_bdpm.txt")
     compo_path = os.path.join(data_dir, "CIS_COMPO_bdpm.txt")
 
-    # 1. Charger toutes les molécules en mémoire
     substances_map = _load_all_substances(compo_path)
     
-    drugs = []
+    unique_drugs = {} # Clé: (NomSimplifié, SubstancesIds)
     
     if not os.path.exists(cis_path):
         return []
 
-    # 2. Lire les médicaments et filtrer
     with open(cis_path, 'r', encoding='iso-8859-1') as f:
         for line in f:
             columns = line.strip().split('\t')
-            # Structure du fichier CIS_bdpm.txt :
-            # 0: Code CIS
-            # 1: Nom du médicament
-            # ...
             if len(columns) >= 2:
                 cis = columns[0]
                 nom_complet = columns[1]
                 
-                # Vérifier si le médicament fait partie de notre liste cible
-                # On vérifie si un des noms de TARGET_DRUGS est dans le nom complet
+                # Filtrage sur nos 15 princeps
                 if any(target in nom_complet.upper() for target in TARGET_DRUGS):
+                    nom_simplifie = _simplify_name(nom_complet)
                     drug_substances = substances_map.get(cis, [])
                     
-                    drug = Drug(
-                        cis=cis,
-                        nom=nom_complet,
-                        substances=drug_substances
-                    )
-                    drugs.append(drug)
+                    # On crée une clé unique basée sur le nom et les codes des substances
+                    # pour être sûr de ne pas fusionner deux médicaments différents 
+                    # qui auraient le même nom (rare mais possible)
+                    sub_ids = "-".join(sorted([s.code_substance for s in drug_substances]))
+                    key = f"{nom_simplifie}_{sub_ids}"
                     
-    return drugs
+                    if key not in unique_drugs:
+                        unique_drugs[key] = Drug(
+                            cis=cis, # On garde un CIS arbitraire parmi les doublons
+                            nom=nom_simplifie,
+                            substances=drug_substances
+                        )
+                    
+    return list(unique_drugs.values())

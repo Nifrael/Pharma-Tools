@@ -1,35 +1,63 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SearchDrug from './SearchDrug';
+import { selectedDrugs } from '../../lib/stores/medicationStore';
+
+// Mock de fetch global
+vi.stubGlobal('fetch', vi.fn());
 
 describe('SearchDrug Component', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    selectedDrugs.set([]); // On vide le store avant chaque test
+  });
+
   it('renders the input field', () => {
-    render(<SearchDrug onAdd={() => {}} />);
+    render(<SearchDrug />);
     const input = screen.getByPlaceholderText(/rechercher un médicament/i);
     expect(input).toBeInTheDocument();
   });
 
-  it('calls onAdd when submitting a valid drug name', () => {
-    const mockOnAdd = vi.fn();
-    render(<SearchDrug onAdd={mockOnAdd} />);
+  it('searches for drugs when typing', async () => {
+    const mockDrugs = [
+      { cis: '123', nom: 'DOLIPRANE 500mg', substances: [] }
+    ];
+    
+    (fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => mockDrugs,
+    });
 
+    render(<SearchDrug />);
     const input = screen.getByPlaceholderText(/rechercher un médicament/i);
-    const button = screen.getByRole('button', { name: /ajouter/i });
 
-    fireEvent.change(input, { target: { value: 'Doliprane' } });
-    fireEvent.click(button);
+    fireEvent.change(input, { target: { value: 'Doli' } });
 
-    expect(mockOnAdd).toHaveBeenCalledTimes(1);
-    expect(mockOnAdd).toHaveBeenCalledWith('Doliprane');
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/api/search?q=Doli'));
+    });
+
+    const suggestion = await screen.findByText(/DOLIPRANE 500mg/i);
+    expect(suggestion).toBeInTheDocument();
   });
 
-  it('does not call onAdd if input is empty', () => {
-    const mockOnAdd = vi.fn();
-    render(<SearchDrug onAdd={mockOnAdd} />);
+  it('adds a drug to the store when a suggestion is clicked', async () => {
+    const mockDrug = { cis: '123', nom: 'DOLIPRANE 500mg', substances: [{ nom: 'PARACETAMOL' }] };
+    
+    (fetch as any).mockResolvedValue({
+      ok: true,
+      json: async () => [mockDrug],
+    });
 
-    const button = screen.getByRole('button', { name: /ajouter/i });
-    fireEvent.click(button);
+    render(<SearchDrug />);
+    const input = screen.getByPlaceholderText(/rechercher un médicament/i);
 
-    expect(mockOnAdd).not.toHaveBeenCalled();
+    fireEvent.change(input, { target: { value: 'Doli' } });
+
+    const suggestion = await screen.findByText(/DOLIPRANE 500mg/i);
+    fireEvent.click(suggestion);
+
+    // On vérifie que le store contient bien le médicament
+    expect(selectedDrugs.get()).toContainEqual(mockDrug);
   });
 });
