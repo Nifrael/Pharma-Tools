@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { addDrug } from '../../lib/stores/medicationStore';
+import './SearchDrug.scss';
+
 
 export interface Substance {
-  substance_code: string;
+  code_sub: string;
   name: string;
   dose?: string;
+  therapeutic_class?: string;
+  interaction_type?: 'THERAPEUTIC_CLASS' | 'SUBSTANCE';
+  metadata: {
+    photosensibility: boolean;
+    driving_risk: number;
+    advice: string;
+  };
 }
 
 export interface Drug {
   cis: string;
   name: string;
+  administration_way?: string;
   substances: Substance[];
 }
 
