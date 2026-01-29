@@ -1,63 +1,85 @@
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { selectedDrugs, removeDrug } from '../../lib/stores/medicationStore';
+import './SelectedDrugsList.scss';
+
 
 // --- 1. DÉFINITION DES TYPES (Doit correspondre au Python) ---
 
 interface InteractionResult {
   molecule_a: string;
   molecule_b: string;
-  level_risk: string;     // ex: "Contre-indication"
+  level_risk: string;     // codes: CI, AD, PE, PC
   risk: string;
   management?: string;
 }
 
 interface SafePillsAnalysis {
   interaction_detected: boolean;
-  global_severity: "Rouge" | "Orange" | "Jaune" | "Vert" | null;
-  explanation: string;       // Le texte de l'IA
-  conduct_to_follow: string; // Les conseils de l'IA
+  global_severity: "Rouge" | "Orange" | "Jaune" | "Bleu" | "Vert" | null;
+  explanation: string;
+  conduct_to_follow: string;
   technical_details: InteractionResult[];
 }
 
-export const SelectedDrugsList = () => {
-  // On s'abonne au Store (Ordonnance virtuelle)
+const RISK_LABELS: Record<string, { label: string; color: string }> = {
+  "CI": { label: "Contre-indication", color: "#e74c3c" },      // Rouge
+  "AD": { label: "Association déconseillée", color: "#e67e22" }, // Orange
+  "PE": { label: "Précaution d'emploi", color: "#f1c40f" },      // Jaune
+  "PC": { label: "À prendre en compte", color: "#3498db" }       // Bleu
+};
+
+interface Props {
+  onAnalyze?: (drugs: any[]) => void;
+  analyzeLabel?: string;
+  customAnalysis?: SafePillsAnalysis | null;
+  customLoading?: boolean;
+  customError?: string | null;
+  showDefaultAnalysis?: boolean;
+}
+
+export const SelectedDrugsList: React.FC<Props> = ({ 
+  onAnalyze, 
+  analyzeLabel = "🔍 Analyser l'ordonnance",
+  customAnalysis,
+  customLoading,
+  customError,
+  showDefaultAnalysis = true
+}) => {
   const drugs = useStore(selectedDrugs);
-  
-  // États locaux pour l'interface
-  const [analysis, setAnalysis] = useState<SafePillsAnalysis | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [internalAnalysis, setInternalAnalysis] = useState<SafePillsAnalysis | null>(null);
+  const [internalLoading, setInternalLoading] = useState(false);
+  const [internalError, setInternalError] = useState<string | null>(null);
 
-  // --- 2. FONCTION D'ANALYSE ---
+  const analysis = customAnalysis !== undefined ? customAnalysis : internalAnalysis;
+  const loading = customLoading !== undefined ? customLoading : internalLoading;
+  const error = customError !== undefined ? customError : internalError;
+
   const handleAnalyze = async () => {
-    if (drugs.length < 2) return;
+    if (onAnalyze) {
+      onAnalyze(drugs);
+      return;
+    }
 
-    setLoading(true);
-    setError(null);
-    setAnalysis(null);
+    if (drugs.length < 2) return;
+    setInternalLoading(true);
+    setInternalError(null);
+    setInternalAnalysis(null);
 
     try {
       const response = await fetch('http://127.0.0.1:8000/api/analyze', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(drugs), // On envoie la liste brute
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(drugs),
       });
 
-      if (!response.ok) {
-        throw new Error("Erreur de communication avec le serveur");
-      }
-
+      if (!response.ok) throw new Error("Erreur serveur");
       const data = await response.json();
-      setAnalysis(data);
-
+      setInternalAnalysis(data);
     } catch (err) {
-      console.error(err);
-      setError("Impossible de joindre l'IA. Vérifiez que le Backend tourne.");
+      setInternalError("Impossible de joindre le serveur d'analyse.");
     } finally {
-      setLoading(false);
+      setInternalLoading(false);
     }
   };
 
@@ -74,13 +96,7 @@ export const SelectedDrugsList = () => {
                 <div className="drugs-list__info">
                   <span className="drugs-list__name">{drug.name}</span>
                 </div>
-                <button
-                  onClick={() => removeDrug(drug.cis)}
-                  className="drugs-list__remove"
-                  title="Supprimer"
-                >
-                  &times;
-                </button>
+                <button onClick={() => removeDrug(drug.cis)} className="drugs-list__remove">&times;</button>
               </li>
             ))}
           </ul>
@@ -89,33 +105,27 @@ export const SelectedDrugsList = () => {
 
       {/* 2. BOUTON D'ACTION */}
       <div className="action-area text-center">
-        <button
-          onClick={handleAnalyze}
-          disabled={drugs.length < 2 || loading}
+        <button 
+          onClick={handleAnalyze} 
+          disabled={drugs.length === 0 || loading || (onAnalyze ? false : drugs.length < 2)} 
           className="action-area__button"
         >
-          {loading ? 'Analyse en cours...' : '🔍 Analyser l\'ordonnance'}
+          {loading ? 'Analyse en cours...' : analyzeLabel}
         </button>
-        
-        {drugs.length < 2 && drugs.length > 0 && (
-          <p className="action-area__hint action-area__hint--warning">
-            Ajoutez un deuxième médicament pour vérifier les interactions.
-          </p>
-        )}
       </div>
 
       {/* 3. AFFICHAGE DES RÉSULTATS */}
       {error && <div className="analysis-error">{error}</div>}
 
-      {analysis && (
+      {showDefaultAnalysis && analysis && (
         <div className={`analysis-result analysis-result--${analysis.global_severity?.toLowerCase() || 'default'}`}>
-          
           <h3 className="analysis-result__title">
             {analysis.global_severity === 'Rouge' && '⛔'}
             {analysis.global_severity === 'Orange' && '⚠️'}
             {analysis.global_severity === 'Jaune' && '✋'}
+            {analysis.global_severity === 'Bleu' && 'ℹ️'}
             {analysis.global_severity === 'Vert' && '✅'}
-            Analyse : Niveau {analysis.global_severity || 'Inconnu'}
+            Analyse : Niveau {analysis.global_severity || 'Neutre'}
           </h3>
 
           <div className="analysis-result__expert">
@@ -130,15 +140,26 @@ export const SelectedDrugsList = () => {
 
           {analysis.technical_details.length > 0 && (
             <div className="analysis-result__technical">
-              <details>
-                <summary>Détails techniques (Pharmacien)</summary>
-                <ul>
-                  {analysis.technical_details.map((detail, idx) => (
-                    <li key={idx}>
-                      <strong>{detail.molecule_a} + {detail.molecule_b}</strong> : 
-                      <span> {detail.risk}</span>
-                    </li>
-                  ))}
+              <details open>
+                <summary>Détails techniques (Analyse pharmacologique)</summary>
+                <ul className="technical-list">
+                  {analysis.technical_details.map((detail, idx) => {
+                    const riskInfo = RISK_LABELS[detail.level_risk] || { label: detail.level_risk, color: "#95a5a6" };
+                    return (
+                      <li key={idx} className="technical-item">
+                        <div className="technical-item__header">
+                          <span className="badge" style={{ backgroundColor: riskInfo.color }}>
+                            {riskInfo.label}
+                          </span>
+                          <strong>{detail.molecule_a} + {detail.molecule_b}</strong>
+                        </div>
+                        <div className="technical-item__body">
+                          <p><strong>Mécanisme :</strong> {detail.risk}</p>
+                          {detail.management && <p><strong>Conseil :</strong> {detail.management}</p>}
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </details>
             </div>
@@ -148,3 +169,4 @@ export const SelectedDrugsList = () => {
     </div>
   );
 };
+
