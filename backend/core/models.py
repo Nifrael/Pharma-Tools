@@ -1,15 +1,19 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Literal
+
+class SubstanceMetaData(BaseModel):
+    photosensibility: Optional[bool] = False
+    driving_risk: int = Field(0, ge=0, le=3, description="Niveau de vigilance de 1 à 3.")
+    advice: str = Field("", description="Conseil à donner au patient.")  
 
 class Substance(BaseModel):
-    """
-    Représente une substance active contenue dans un médicament.
-    Exemple: Paracétamol
-    """
-    substance_code: str
+    code_sub: str
     name: str
     dose: Optional[str] = None
     therapeutic_class: Optional[str] = None
+    interaction_type: Literal["THERAPEUTIC_CLASS", "SUBSTANCE"] = "THERAPEUTIC_CLASS"
+
+    metadata: SubstanceMetaData = Field(default_factory=SubstanceMetaData)
 
 class Drug(BaseModel):
     """
@@ -17,25 +21,12 @@ class Drug(BaseModel):
     """
     cis: str
     name: str
+    administration_way: Optional[str] = None
     substances: List[Substance] = []
 
-class InteractionRule(BaseModel):
-    """
-    Ce modèle représente une règle d'interaction extraite du thésaurus.
-    Il sert de base à la validation SQL et de contexte pour l'IA.
-    """
-    level_alert: str  # Contre-indication, Association déconseillée, etc.
-    risk: str
-    advice: str
-    source: str = "Thésaurus ANSM"
-
-class SafePillsAnalysis(BaseModel):
-    """
-    C'est le MODÈLE FINAL que l'IA (Gemini) devra remplir.
-    Ce format sera identique pour toutes les réponses (Standardisation).
-    """
-    interaction_detected: bool
-    level_alert: Optional[str] = None # Rouge (CI), Orange (AD), Jaune (PE)
-    explanation: str = Field(..., description="Explication simple en français ou espagnol")
-    conduct_to_follow: str
-    habits_risks: Optional[str] = None # Alcool, soleil, alimentation
+class Interaction(BaseModel):
+    target_a: str = Field(..., description="Nom de la classe OU de la molécule")
+    target_b: str = Field(..., description="Nom de la classe OU de la molécule")
+    risk_level: str = Field(..., description="PE (Précaution), AD (Déconseillé), CI (Contre-indiqué)")
+    mechanism: str
+    conduct_to_follow: Optional[str] = None
