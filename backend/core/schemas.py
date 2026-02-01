@@ -5,6 +5,7 @@ mais qui ne sont PAS stockés tels quels en base de données.
 """
 from pydantic import BaseModel
 from typing import List, Optional
+from .models import RiskLevel
 
 class SearchResult(BaseModel):
     """Ce que le moteur de recherche renvoie à l'UI"""
@@ -15,5 +16,5 @@ class SearchResult(BaseModel):
 
 class EvaluationResponse(BaseModel):
     """Résultat du calcul/algorithme d'analyse"""
-    score: str        # "GREEN", "ORANGE", "RED"
+    score: RiskLevel  # Utilisation de l'Enum
     details: List[str] # Messages explicatifs générés dynamiquement
