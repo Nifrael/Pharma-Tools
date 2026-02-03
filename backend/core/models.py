@@ -33,5 +33,10 @@ class Question(BaseModel):
     """Reflet de la table 'questions'"""
     id: str
     text: str
-    trigger_tags: List[str] = [] # JSON stocké en base
+    trigger_tags: List[str] = []
+    applicable_routes: List[str] = []
+    target_gender: Optional[str] = None  # "M", "F", ou None
+    age_min: Optional[int] = None  # Age minimum (ex: 65)
+    age_max: Optional[int] = None  # Age maximum (ex: 12 pour enfant)
+    requires_other_meds: bool = False  # Question posée uniquement si polymédication
     risk_level: RiskLevel
