@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { UserProfile } from './UserProfileForm';
 
 interface Question {
   id: string;
@@ -8,11 +9,12 @@ interface Question {
 interface Props {
   id: string; // ID du médicament (CIS) ou substance
   molecule: string;
+  userProfile: UserProfile;
   onComplete: (result: 'green' | 'orange' | 'red') => void;
   onBack: () => void;
 }
 
-export const AutomedicationQuiz: React.FC<Props> = ({ id, molecule, onComplete, onBack }) => {
+export const AutomedicationQuiz: React.FC<Props> = ({ id, molecule, userProfile, onComplete, onBack }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
@@ -22,7 +24,14 @@ export const AutomedicationQuiz: React.FC<Props> = ({ id, molecule, onComplete, 
   React.useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/automedication/questions/${id}`);
+        // Build query params from user profile
+        const params = new URLSearchParams();
+        if (userProfile.gender) params.append('gender', userProfile.gender);
+        if (userProfile.age) params.append('age', userProfile.age.toString());
+        params.append('has_other_meds', userProfile.hasOtherMeds.toString());
+
+        const url = `http://127.0.0.1:8000/api/automedication/questions/${id}?${params.toString()}`;
+        const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
           setQuestions(data);
@@ -34,7 +43,7 @@ export const AutomedicationQuiz: React.FC<Props> = ({ id, molecule, onComplete, 
       }
     };
     fetchQuestions();
-  }, [id]);
+  }, [id, userProfile]);
 
   const handleAnswer = (answer: boolean) => {
     const currentQ = questions[currentQuestionIndex];
@@ -56,7 +65,8 @@ export const AutomedicationQuiz: React.FC<Props> = ({ id, molecule, onComplete, 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cis: id,
-          answers: finalAnswers
+          answers: finalAnswers,
+          has_other_meds: userProfile.hasOtherMeds
         })
       });
 
