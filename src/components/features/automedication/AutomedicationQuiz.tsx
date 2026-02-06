@@ -10,7 +10,7 @@ interface Props {
   id: string; // ID du médicament (CIS) ou substance
   molecule: string;
   userProfile: UserProfile;
-  onComplete: (result: 'green' | 'orange' | 'red') => void;
+  onComplete: (result: 'green' | 'orange' | 'red', explanation?: string) => void;
   onBack: () => void;
 }
 
@@ -66,14 +66,18 @@ export const AutomedicationQuiz: React.FC<Props> = ({ id, molecule, userProfile,
         body: JSON.stringify({
           cis: id,
           answers: finalAnswers,
-          has_other_meds: userProfile.hasOtherMeds
+          has_other_meds: userProfile.hasOtherMeds,
+          gender: userProfile.gender,
+          age: userProfile.age
         })
       });
 
       if (response.ok) {
         const result = await response.json();
-        // result = { score: "GREEN" | "ORANGE" | "RED", details: [...] }
-        onComplete(result.score.toLowerCase() as 'green' | 'orange' | 'red');
+        onComplete(
+          result.score.toLowerCase() as 'green' | 'orange' | 'red', 
+          result.ai_explanation
+        );
       }
     } catch (error) {
       console.error('Erreur calcul score:', error);

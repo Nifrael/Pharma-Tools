@@ -360,6 +360,43 @@
       background: var(--color-primary-dark);
     }
   }
+
+  .ai-explanation-card {
+    background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+    border: 2px solid #a3d5ff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    text-align: left;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+    animation: slideIn 0.5s ease-out;
+
+    h4 {
+      color: #0056b3;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    p {
+      color: #334e68;
+      line-height: 1.6;
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+    }
+
+    .disclaimer {
+      display: block;
+      color: #829ab1;
+      font-size: 0.8rem;
+      font-style: italic;
+      border-top: 1px solid #dceefb;
+      padding-top: 0.5rem;
+    }
+  }
 }
 
 /* SELECTION STEP */

@@ -14,6 +14,7 @@ export const AutomedicationContainer: React.FC = () => {
     name: string;
   } | null>(null);
   const [score, setScore] = useState<'green' | 'orange' | 'red' | null>(null);
+  const [aiExplanation, setAiExplanation] = useState<string | undefined>(undefined);
 
   const handleProfileComplete = (profile: UserProfile) => {
     setUserProfile(profile);
@@ -25,8 +26,9 @@ export const AutomedicationContainer: React.FC = () => {
     setStep('profile');
   };
 
-  const handleQuizComplete = (result: 'green' | 'orange' | 'red') => {
+  const handleQuizComplete = (result: 'green' | 'orange' | 'red', explanation?: string) => {
     setScore(result);
+    setAiExplanation(explanation);
     setStep('score');
   };
 
@@ -35,6 +37,7 @@ export const AutomedicationContainer: React.FC = () => {
     setUserProfile(null);
     setSelectedSubstance(null);
     setScore(null);
+    setAiExplanation(undefined);
   };
 
   return (
@@ -64,6 +67,7 @@ export const AutomedicationContainer: React.FC = () => {
         <AutomedicationScore 
           score={score} 
           molecule={selectedSubstance?.name || null}
+          aiExplanation={aiExplanation}
           onReset={handleReset}
         />
       )}
