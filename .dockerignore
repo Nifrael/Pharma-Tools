@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+.env
+.pytest_cache/
+
+# Data
+backend/data/*.db
+backend/data/*.db-journal
+
+/scripts_data
+
+/docs
+
+# Frontend
+node_modules/
+dist/
+.astro/
+
+# Logs
+*.log
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
