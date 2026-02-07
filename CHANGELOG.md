@@ -2,6 +2,36 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [0.4.0] - 2026-02-07
+
+### 🧠 Intelligence Artificielle & Pédagogie
+
+- **Intégration Gemini 3** : Migration vers le nouveau SDK `google-genai` et utilisation du modèle `gemini-3-flash-preview`.
+- **Explications Contextuelles** : L'IA génère désormais une explication vulgarisée et rassurante basée sur le profil du patient et ses réponses au quiz.
+- **Prompt Engineering** : Système d'instructions strict pour éviter les hallucinations et s'adapter au profil (âge, genre, grossesse).
+
+### 🏗️ Architecture Backend (Refactoring Modulaire)
+
+- **Découpage du Monolithe** : Transformation du service d'automédication en un module structuré (`backend/services/automedication/`) :
+  - `question_filters.py` : Logique pure de filtrage (âge, genre, route).
+  - `risk_calculator.py` : Calculateur de score agnostique.
+  - `db_repository.py` : Couche d'accès aux données (DAO) isolée.
+- **Clean Code** : Séparation stricte de la logique métier (fonctions pures) et des entrées/sorties (IO).
+
+### 🚢 DevOps & Déploiement Cloud
+
+- **Dockerisation** : Création d'une image Docker optimisée pour le backend avec génération automatique de la base SQLite lors du Build.
+- **Stratégie Hybride** :
+  - Backend déployé sur **Render** (via Docker).
+  - Frontend déployé sur **Vercel** (optimisation Astro).
+- **Config Dynamique** : Mise en place de `PUBLIC_API_URL` pour une communication fluide entre le front et le back.
+
+### 🧪 Qualité & Fiabilité
+
+- **Renforcement des Tests** : Passage à **21 tests automatisés**.
+- **TDD Legacy** : Utilisation de tests de caractérisation pour sécuriser le refactoring du code existant.
+- **Validation API** : Tests d'intégration sur les endpoints FastAPI (Mocking LLM & DB).
+
 ## [0.3.0] - 2026-02-01
 
 ### 🔄 PIVOT MAJEUR : Sécurisation de l'Automédication
