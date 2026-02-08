@@ -1,24 +1,15 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import Hero from "@components/home/Hero.astro";
 ---
 
 <Layout title="SafePills">
-  <div class="page-header">
-    <h1>SafePills</h1>
-    <p class="subtitle">Votre assistant d'automédication.</p>
-  </div>
+  <Hero />
 
   <main class="home-container">
     <div class="glass-card">
-      <section class="hero-section">
-        <p>
-          SafePills vous aide à évaluer la sécurité de l'automédication grâce à
-          un questionnaire personnalisé.
-        </p>
-      </section>
-
       <section class="features-section">
-        <h3>Comment ça fonctionne ?</h3>
+        <h3>Comment SafePills fonctionne ?</h3>
         <div class="features-grid">
           <div class="feature">
             <div class="feature-icon">🔍</div>
@@ -53,71 +44,29 @@ import Layout from "@layouts/Layout.astro";
   @use "../styles/config/variables" as *;
   @use "../styles/config/mixins" as *;
 
-  .page-header {
-    text-align: center;
-    padding-top: 2rem;
-
-    h1 {
-      font-size: 4rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #3cb56f, #60fca1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    .subtitle {
-      font-size: 1.2rem;
-      color: var(--paragraph-color);
-    }
-  }
-
   .home-container {
-    max-width: 900px;
     margin: 0 auto;
     padding: 0 1rem 5rem;
   }
 
-  .glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    border-radius: 24px;
-    padding: 2.5rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
   .hero-section {
     text-align: center;
-    margin-bottom: 3rem;
-
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: #2d3436;
-    }
-
-    .hero-text {
-      font-size: 1.1rem;
-      color: #636e72;
-      margin-bottom: 2rem;
-      line-height: 1.6;
-    }
+    margin: 3rem 0;
   }
 
   .features-section {
     h3 {
       font-size: 1.5rem;
       text-align: center;
-      margin-bottom: 2rem;
-      color: #2d3436;
+      margin: 3rem 0;
+      color: var(--primary-color);
     }
 
     .features-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 2rem;
-      margin-top: 2rem;
+      margin-top: 1rem;
     }
 
     .feature {
@@ -129,27 +78,41 @@ import Layout from "@layouts/Layout.astro";
         transform 0.3s,
         box-shadow 0.3s;
 
-      &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      }
-
       .feature-icon {
-        font-size: 3rem;
+        font-size: 2rem;
         margin-bottom: 1rem;
       }
 
       h4 {
-        font-size: 1.2rem;
         margin-bottom: 0.5rem;
-        color: #2d3436;
+        color: var(--primary-color);
       }
 
       p {
-        font-size: 0.95rem;
-        color: #636e72;
+        font-size: 1rem;
+        color: var(--paragraph-color);
         line-height: 1.5;
       }
+    }
+  }
+
+  @include breakpoint-up($breakpoint-tablet) {
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .home-container {
+      max-width: 1200px;
+    }
+
+    .feature:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
   }
 </style>
