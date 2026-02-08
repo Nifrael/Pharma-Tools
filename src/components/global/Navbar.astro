@@ -1,8 +1,8 @@
 ---
 const menuItems = [
-  { href: "/automedication", text: "Score Automédication" },
   { href: "/about", text: "A Propos" },
   { href: "/contact", text: "Contact" },
+  { href: "/automedication", text: "Testez !" },
 ];
 ---
 
@@ -14,7 +14,14 @@ const menuItems = [
         {
           menuItems.map((item) => (
             <li>
-              <a href={item.href}>{item.text}</a>
+              <a
+                href={item.href}
+                class={
+                  item.text === "Testez !" ? "btn btn-primary nav-btn" : ""
+                }
+              >
+                {item.text}
+              </a>
             </li>
           ))
         }
@@ -34,7 +41,12 @@ const menuItems = [
           {
             menuItems.map((item) => (
               <li>
-                <a href={item.href}>{item.text}</a>
+                <a
+                  href={item.href}
+                  class={item.text === "Testez !" ? "btn btn-primary" : ""}
+                >
+                  {item.text}
+                </a>
               </li>
             ))
           }
@@ -47,6 +59,7 @@ const menuItems = [
 <style lang="scss">
   @use "@styles/config/variables" as *;
   @use "@styles/config/mixins" as *;
+  @use "@styles/components/buttons" as *;
 
   header {
     position: relative;
@@ -88,15 +101,8 @@ const menuItems = [
     }
   }
 
-  #logo {
-    font-size: var(--h4);
-    font-family: var(--font-title);
-    z-index: 20;
-    font-weight: bold;
-  }
-
   a {
-    font-size: var(--h3);
+    font-size: var(--h4);
     font-family: var(--font-text);
     text-decoration: none;
     color: var(--primary-color);
@@ -179,13 +185,19 @@ const menuItems = [
     }
 
     a {
-      color: var(--primary-color);
-      font-size: var(--h2);
+      font-size: var(--h4);
       padding: 1rem 2rem;
       display: block;
       text-align: center;
+      transition: all 0.3s ease;
 
       @include keyboard-focus(var(--primary-color));
+
+      &:hover,
+      &:active {
+        color: var(--tertiary-color);
+        transform: translateY(-2px);
+      }
     }
   }
 
@@ -216,6 +228,12 @@ const menuItems = [
       align-items: center;
       gap: 3rem;
       white-space: nowrap;
+
+      .nav-btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+        font-family: var(--font-text);
+      }
     }
 
     .mobile-menu {
