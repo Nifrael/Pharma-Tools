@@ -50,7 +50,7 @@ export const AutomedicationSearch: React.FC<Props> = ({ onSelect }) => {
 
   return (
     <div className="automedication-search">
-      <h2>Quelle molécule souhaitez-vous prendre ?</h2>
+      <h3>Quelle molécule souhaitez-vous prendre ?</h3>
       <div className="search-input-wrapper">
         <input 
           type="text" 
