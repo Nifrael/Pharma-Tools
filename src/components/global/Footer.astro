@@ -1,12 +1,14 @@
 ---
-
+import PillIcon from "../icons/PillIcon.astro";
 ---
 
 <footer class="site-footer">
   <div class="footer-content">
     <div class="footer-top">
       <div class="brand">
-        <h1 id="logo">💊 SafePills</h1>
+        <h1 id="logo">
+          <span class="icon"><PillIcon size={20} /></span> SafePills
+        </h1>
       </div>
 
       <nav class="footer-nav">
@@ -49,6 +51,12 @@
     text-align: center;
     gap: 1.5rem;
     margin-bottom: 2rem;
+
+    @include breakpoint-up($breakpoint-tablet) {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
   }
 
   .brand {
@@ -59,12 +67,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  }
 
-    h1 {
-      margin: 0;
-      font-size: inherit;
-      color: inherit;
-    }
+  .brand h1 {
+    margin: 0;
+    font-size: inherit;
+    color: inherit;
   }
 
   .footer-nav {
@@ -73,28 +81,20 @@
     gap: 1rem;
     align-items: center;
 
-    a {
-      color: #636e72;
-      font-size: 0.95rem;
-      text-decoration: none;
-      transition: color 0.3s;
-
-      &:hover {
-        color: #2ecc71;
-      }
+    @include breakpoint-up($breakpoint-tablet) {
+      flex-direction: row;
+      gap: 2rem;
     }
   }
 
-  @include breakpoint-up($breakpoint-tablet) {
-    .footer-top {
-      flex-direction: row;
-      justify-content: space-between;
-      text-align: left;
-    }
+  .footer-nav a {
+    color: #636e72;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: color 0.3s;
 
-    .footer-nav {
-      flex-direction: row;
-      gap: 2rem;
+    &:hover {
+      color: #2ecc71;
     }
   }
 
@@ -108,10 +108,10 @@
   .footer-bottom {
     text-align: center;
     font-size: 0.85rem;
+  }
 
-    p {
-      margin: 0;
-      color: var(--tertiary-color);
-    }
+  .footer-bottom p {
+    margin: 0;
+    color: var(--tertiary-color);
   }
 </style>

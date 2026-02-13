@@ -1,6 +1,10 @@
 @use "@styles/config/variables" as *;
 @use "@styles/config/mixins" as *;
 
+html {
+  scroll-behavior: smooth;
+}
+
 *,
 *::before,
 *::after {
@@ -23,4 +27,8 @@ main {
   font-family: var(--font-title);
   z-index: 20;
   font-weight: bold;
+}
+
+.icon {
+  color: var(--tertiary-color);
 }
