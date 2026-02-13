@@ -1,4 +1,6 @@
 ---
+import PillIcon from "../icons/PillIcon.astro";
+
 const menuItems = [
   { href: "/about", text: "A Propos" },
   { href: "/contact", text: "Contact" },
@@ -9,7 +11,9 @@ const menuItems = [
 <header>
   <nav aria-label="Navigation principale">
     <div class="nav-container">
-      <a href="/" id="logo">💊 SafePills</a>
+      <a href="/" id="logo"
+        ><span class="icon"><PillIcon size={20} /></span> SafePills</a
+      >
       <ul class="desktop-menu">
         {
           menuItems.map((item) => (
@@ -66,18 +70,18 @@ const menuItems = [
     z-index: 100;
     width: 100%;
     padding: 0.5rem;
+  }
 
-    &::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 0.5px;
-      background-color: rgba(210, 210, 210, 0.405);
-      box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
-      z-index: 30;
-    }
+  header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0.5px;
+    background-color: rgba(210, 210, 210, 0.405);
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+    z-index: 30;
   }
 
   .nav-container {
@@ -95,10 +99,11 @@ const menuItems = [
     list-style: none;
     margin: 0;
     padding: 0;
-    li {
-      margin: 0;
-      padding: 0;
-    }
+  }
+
+  ul li {
+    margin: 0;
+    padding: 0;
   }
 
   a {
@@ -109,6 +114,12 @@ const menuItems = [
     transition: color 0.4s ease;
 
     @include keyboard-focus(var(--primary-color));
+
+    @include breakpoint-up($breakpoint-desktop) {
+      &:hover {
+        color: var(--tertiary-color);
+      }
+    }
   }
 
   .desktop-menu {
@@ -116,6 +127,16 @@ const menuItems = [
     align-items: center;
     gap: 3rem;
     white-space: nowrap;
+
+    @include breakpoint-up($breakpoint-desktop) {
+      display: flex;
+    }
+  }
+
+  .desktop-menu .nav-btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    font-family: var(--font-text);
   }
 
   .menu-button {
@@ -129,38 +150,40 @@ const menuItems = [
     transition: transform 0.2s ease;
 
     @include button-keyboard-focus(var(--primary-color));
-
-    span {
-      height: 3px;
-      width: 100%;
-      background-color: var(--primary-color);
-      border-radius: 25px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      transition: 0.2s ease;
-    }
-    span:first-child {
-      top: 25%;
-    }
-    span:last-child {
-      top: 75%;
-    }
   }
 
-  .active {
-    span:first-child {
-      top: 50%;
-      transform: translate(-50%, -50%) rotate(45deg);
-    }
-    span:nth-child(2) {
-      opacity: 0;
-    }
-    span:last-child {
-      top: 50%;
-      transform: translate(-50%, -50%) rotate(-45deg);
-    }
+  .menu-button span {
+    height: 3px;
+    width: 100%;
+    background-color: var(--primary-color);
+    border-radius: 25px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: 0.2s ease;
+  }
+
+  .menu-button span:first-child {
+    top: 25%;
+  }
+
+  .menu-button span:last-child {
+    top: 75%;
+  }
+
+  .active span:first-child {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .active span:last-child {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
   }
 
   .menu {
@@ -179,25 +202,25 @@ const menuItems = [
     transition: 0.5s ease;
     opacity: 0;
     overflow: auto;
+  }
 
-    li {
-      margin: 0;
-    }
+  .menu li {
+    margin: 0;
+  }
 
-    a {
-      font-size: var(--h4);
-      padding: 1rem 2rem;
-      display: block;
-      text-align: center;
-      transition: all 0.3s ease;
+  .menu a {
+    font-size: var(--h4);
+    padding: 1rem 2rem;
+    display: block;
+    text-align: center;
+    transition: all 0.3s ease;
 
-      @include keyboard-focus(var(--primary-color));
+    @include keyboard-focus(var(--primary-color));
 
-      &:hover,
-      &:active {
-        color: var(--tertiary-color);
-        transform: translateY(-2px);
-      }
+    &:hover,
+    &:active {
+      color: var(--tertiary-color);
+      transform: translateY(-2px);
     }
   }
 
@@ -214,30 +237,15 @@ const menuItems = [
     overflow: hidden;
   }
 
-  @include breakpoint-up($breakpoint-desktop) {
-    #logo {
-      font-size: var(--h2);
-    }
-
-    a:hover {
-      color: var(--tertiary-color);
-    }
-
-    .desktop-menu {
-      display: flex;
-      align-items: center;
-      gap: 3rem;
-      white-space: nowrap;
-
-      .nav-btn {
-        padding: 0.6rem 1.5rem;
-        font-size: 1rem;
-        font-family: var(--font-text);
-      }
-    }
-
-    .mobile-menu {
+  .mobile-menu {
+    @include breakpoint-up($breakpoint-desktop) {
       display: none;
+    }
+  }
+
+  #logo {
+    @include breakpoint-up($breakpoint-desktop) {
+      font-size: var(--h2);
     }
   }
 </style>

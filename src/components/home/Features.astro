@@ -1,0 +1,151 @@
+---
+import SearchIcon from "../icons/SearchIcon.astro";
+import ActivityIcon from "../icons/ActivityIcon.astro";
+import DocumentIcon from "../icons/DocumentIcon.astro";
+import PillIcon from "../icons/PillIcon.astro";
+---
+
+<section id="en-savoir-plus" class="features-section">
+  <div class="features-header">
+    <h3>Comment ça marche ?</h3>
+    <p>
+      Un processus simple et rapide en trois étapes pour garantir votre sécurité
+      médicamenteuse.
+    </p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="icon">
+        <SearchIcon />
+      </div>
+      <h3>1. Recherchez</h3>
+      <p>Saisissez le nom du médicament que vous souhaitez prendre.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">
+        <ActivityIcon />
+      </div>
+      <h3>2. Répondez</h3>
+      <p>
+        Répondez à quelques questions sur votre situation médicale et vos
+        habitudes de vie.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon">
+        <DocumentIcon />
+      </div>
+      <h3>3. Recevez nos conseils</h3>
+      <p>Recevez une évaluation claire et des conseils adaptés.</p>
+    </div>
+  </div>
+
+  <div class="cta-buttons">
+    <a href="/automedication" class="btn btn-primary"> Tester un médicament </a>
+  </div>
+</section>
+
+<style lang="scss">
+  @use "../../styles/config/variables" as *;
+  @use "../../styles/config/mixins" as *;
+
+  .features-section {
+    background-color: #f4f6f8;
+    margin: 2rem auto;
+    padding: 2.5rem 1.5rem;
+    width: 100%;
+
+    @include breakpoint-up($breakpoint-tablet) {
+      padding: 5rem 2rem;
+    }
+  }
+
+  .features-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+  }
+
+  .features-header h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2d3436;
+    margin: 0 0 1rem;
+    font-family: var(--font-title);
+
+    @include breakpoint-up($breakpoint-tablet) {
+      font-size: 2.5rem;
+    }
+  }
+
+  .features-header p {
+    font-size: 1.1rem;
+    color: #636e72;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @include breakpoint-up($breakpoint-tablet) {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    transition:
+      transform 0.3s,
+      box-shadow 0.3s;
+
+    @include breakpoint-up($breakpoint-tablet) {
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+    }
+  }
+
+  .icon {
+    width: 48px;
+    height: 48px;
+    background: #e8f7ee;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2d3436;
+    margin: 0 0 0.75rem;
+  }
+
+  .feature-card p {
+    font-size: 0.95rem;
+    color: #636e72;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+</style>
