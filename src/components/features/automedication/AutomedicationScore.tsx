@@ -1,4 +1,5 @@
 import React from 'react';
+import './AutomedicationScore.scss';
 
 interface Props {
   score: 'green' | 'orange' | 'red';
@@ -25,7 +26,7 @@ export const AutomedicationScore: React.FC<Props> = ({ score, molecule, aiExplan
       case 'red':
         return {
           label: 'DÉCONSEILLÉ',
-          text: `La prise de ${molecule} est fortement déconseillée ou contre-indiquée dans votre situation. Consultez un médecin.`,
+          text: `La prise de ${molecule} est fortement déconseillée ou contre-indiquée dans votre situation. Consultez votre pharmacien ou médecin pour une alternative.`,
           class: 'score-red'
         };
     }
