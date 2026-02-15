@@ -19,4 +19,6 @@ class EvaluationResponse(BaseModel):
     score: RiskLevel  # Utilisation de l'Enum
     details: List[str] # Messages explicatifs générés dynamiquement
     ai_explanation: Optional[str] = None # Explication pédagogique générée par IA
+    general_advice: List[str] = []  # Conseils généraux de la substance (affichés même en GREEN)
+    has_coverage: bool = True  # False si aucune question n'est associée au médicament
     answered_questions_context: Optional[List[dict]] = None # Contexte enrichi pour l'IA

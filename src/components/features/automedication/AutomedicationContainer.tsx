@@ -12,6 +12,8 @@ export const AutomedicationContainer: React.FC = () => {
   } | null>(null);
   const [score, setScore] = useState<'green' | 'orange' | 'red' | null>(null);
   const [aiExplanation, setAiExplanation] = useState<string | undefined>(undefined);
+  const [generalAdvice, setGeneralAdvice] = useState<string[]>([]);
+  const [hasCoverage, setHasCoverage] = useState<boolean>(true);
 
   const handleSelectMolecule = (substanceCode: string, substanceName: string) => {
     setSelectedSubstance({ code: substanceCode, name: substanceName });
@@ -20,10 +22,15 @@ export const AutomedicationContainer: React.FC = () => {
 
   const handleQuestionnaireComplete = (
     result: 'green' | 'orange' | 'red',
-    explanation?: string
+    explanation?: string,
+    answers?: Record<string, any>,
+    advice?: string[],
+    coverage?: boolean
   ) => {
     setScore(result);
     setAiExplanation(explanation);
+    setGeneralAdvice(advice || []);
+    setHasCoverage(coverage ?? true);
     setStep('score');
   };
 
@@ -32,6 +39,8 @@ export const AutomedicationContainer: React.FC = () => {
     setSelectedSubstance(null);
     setScore(null);
     setAiExplanation(undefined);
+    setGeneralAdvice([]);
+    setHasCoverage(true);
   };
 
   return (
@@ -54,6 +63,8 @@ export const AutomedicationContainer: React.FC = () => {
           score={score}
           molecule={selectedSubstance?.name || null}
           aiExplanation={aiExplanation}
+          generalAdvice={generalAdvice}
+          hasCoverage={hasCoverage}
           onReset={handleReset}
         />
       )}

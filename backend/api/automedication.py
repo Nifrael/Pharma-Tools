@@ -58,21 +58,47 @@ async def evaluate(request: AnswersRequest):
         has_other_meds=request.has_other_meds or False
     )
 
+    # Récupérer les infos du médicament (substances)
+    from ..services.search_service import get_drug_details
+    drug_name = "ce médicament"
+    substance_names = []
+    if request.cis:
+        drug_info = get_drug_details(request.cis)
+        if drug_info:
+            drug_name = drug_info.name
+            substance_names = [s.name for s in drug_info.substances]
+
+    # --- P1-A : Conseils généraux (pour TOUS les scores, y compris GREEN) ---
+    # On lit les conseils "general" depuis medical_knowledge.json
+    import json, os
+    knowledge_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), '..', 'data', 'medical_knowledge.json'
+    )
+    try:
+        with open(knowledge_path, 'r', encoding='utf-8') as f:
+            knowledge = json.load(f)
+        substance_advice = knowledge.get('substance_advice', {})
+        general_tips = []
+        for sub in substance_names:
+            for tip in substance_advice.get(sub, {}).get('general', []):
+                if tip not in general_tips:
+                    general_tips.append(tip)
+        result.general_advice = general_tips
+    except Exception:
+        result.general_advice = []
+
+    # --- P1-B : Indicateur de couverture ---
+    # Si le patient n'a répondu à aucune question médicale, c'est un faux GREEN
+    has_medical_questions = any(
+        not q_id.startswith(('GENDER', 'AGE', 'HAS_OTHER'))
+        for q_id in request.answers.keys()
+    )
+    result.has_coverage = has_medical_questions
+
     # Enrichissement avec IA si Risque (Orange/Rouge)
     if result.score.value != "GREEN":
         from ..services.ai_service import generate_risk_explanation
-        from ..services.search_service import get_drug_details
         
-        # On récupère le nom du médicament et ses substances
-        drug_name = "ce médicament"
-        substance_names = []
-        if request.cis:
-            drug_info = get_drug_details(request.cis)
-            if drug_info:
-                drug_name = drug_info.name
-                substance_names = [s.name for s in drug_info.substances]
-        
-        # Appel asynchrone au service IA avec le contexte enrichi
         explanation = await generate_risk_explanation(
             drug_name=drug_name,
             score=result.score.value,
@@ -81,11 +107,10 @@ async def evaluate(request: AnswersRequest):
                 "gender": request.gender,
                 "age": request.age,
                 "has_other_meds": request.has_other_meds,
-                "substances": substance_names  # NOUVEAU : pour le RAG
+                "substances": substance_names
             },
             answered_questions=result.answered_questions_context or []
         )
         result.ai_explanation = explanation
 
     return result
-

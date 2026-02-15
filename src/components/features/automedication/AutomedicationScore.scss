@@ -105,6 +105,74 @@
       padding-top: 0.5rem;
     }
   }
+
+  // P1-A : Conseils généraux "Bon à savoir"
+  .general-advice-card {
+    background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%);
+    border: 2px solid #b2dfdb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    text-align: left;
+    animation: slideIn 0.4s ease-out;
+
+    h4 {
+      color: #2e7d32;
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.6rem;
+        color: #334e68;
+        line-height: 1.5;
+        font-size: 1rem;
+
+        &::before {
+          content: '•';
+          position: absolute;
+          left: 0;
+          color: #2e7d32;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+
+  // P1-B : Avertissement couverture manquante
+  .no-coverage-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    background: #fff8e1;
+    border: 2px solid #ffe082;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem auto 2rem;
+    max-width: 600px;
+    text-align: left;
+    animation: slideIn 0.4s ease-out;
+
+    .warning-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    p {
+      color: #5d4037;
+      line-height: 1.5;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+  }
 }
 
 /* Animation slideIn (importée depuis _animations.scss si nécessaire) */

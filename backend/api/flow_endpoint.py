@@ -84,8 +84,8 @@ def _convert_medical_questions(questions, route: str = None) -> List[FlowQuestio
     
     flow_questions = []
     for q in questions:
-        # Exclure les questions Q_POLYMEDICAMENTATION (collectées via HAS_OTHER_MEDS)
-        if q.id.startswith("Q_POLYMEDICAMENTATION"):
+        # Exclure les questions de polymédication (déjà collectée via HAS_OTHER_MEDS dans le profil)
+        if q.id.startswith("Q_POLYMEDICATION"):
             continue
         
         # Construire les conditions showIf

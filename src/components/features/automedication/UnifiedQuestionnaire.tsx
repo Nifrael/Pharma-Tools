@@ -25,7 +25,9 @@ interface Props {
   onComplete: (
     result: 'green' | 'orange' | 'red',
     explanation?: string,
-    answers?: Record<string, any>
+    answers?: Record<string, any>,
+    generalAdvice?: string[],
+    hasCoverage?: boolean
   ) => void;
   onBack: () => void;
 }
@@ -81,8 +83,9 @@ export const UnifiedQuestionnaire: React.FC<Props> = ({
         if (response.ok) {
           const data: FlowQuestion[] = await response.json();
           if (data.length === 0) {
-            // Aucune question = résultat vert direct
-            onComplete('green');
+            // Aucune question → appeler /evaluate quand même pour récupérer
+            // les conseils généraux et le flag has_coverage
+            submitAnswers({});
             return;
           }
           setAllQuestions(data);
@@ -135,7 +138,9 @@ export const UnifiedQuestionnaire: React.FC<Props> = ({
         onComplete(
           result.score.toLowerCase() as 'green' | 'orange' | 'red',
           result.ai_explanation,
-          finalAnswers
+          finalAnswers,
+          result.general_advice || [],
+          result.has_coverage ?? true
         );
       }
     } catch (error) {
