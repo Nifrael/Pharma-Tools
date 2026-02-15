@@ -63,12 +63,14 @@ async def evaluate(request: AnswersRequest):
         from ..services.ai_service import generate_risk_explanation
         from ..services.search_service import get_drug_details
         
-        # On récupère le nom du médicament
+        # On récupère le nom du médicament et ses substances
         drug_name = "ce médicament"
+        substance_names = []
         if request.cis:
             drug_info = get_drug_details(request.cis)
             if drug_info:
                 drug_name = drug_info.name
+                substance_names = [s.name for s in drug_info.substances]
         
         # Appel asynchrone au service IA avec le contexte enrichi
         explanation = await generate_risk_explanation(
@@ -78,7 +80,8 @@ async def evaluate(request: AnswersRequest):
             user_profile={
                 "gender": request.gender,
                 "age": request.age,
-                "has_other_meds": request.has_other_meds
+                "has_other_meds": request.has_other_meds,
+                "substances": substance_names  # NOUVEAU : pour le RAG
             },
             answered_questions=result.answered_questions_context or []
         )
